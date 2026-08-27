@@ -29,7 +29,7 @@ function SudokuGrid({ game, selected, onSelect, showMistakes, conflicts }: Props
         if (rowOf(i) % 3 === 2 && rowOf(i) !== 8) cls.push('bb');
         const notes = game.notes[i];
         return (
-          <button type="button" key={i} className={cls.join(' ')} onClick={() => onSelect(i)} aria-label={`row ${rowOf(i) + 1} column ${colOf(i) + 1}${v ? ` ${v}` : ' empty'}`}>
+          <button type="button" key={i} className={cls.join(' ')} onClick={() => onSelect(i)} aria-label={`row ${rowOf(i) + 1} column ${colOf(i) + 1}${v ? ` ${v}` : notes ? ` notes ${[1, 2, 3, 4, 5, 6, 7, 8, 9].filter((d) => notes & (1 << (d - 1))).join(' ')}` : ' empty'}`}>
             {v ? (
               v
             ) : notes ? (

@@ -89,6 +89,8 @@ export interface SharedBest {
 export interface AppConfig {
   spaceId?: string;
   spaceName?: string;
+  /** Name shown on the group board when the host gives the app no login. */
+  displayName?: string;
   /** Sudoku: highlight wrong digits as you type. */
   mistakeHighlight?: boolean;
 }

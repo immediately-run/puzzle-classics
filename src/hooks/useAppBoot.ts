@@ -48,8 +48,10 @@ const errText = (e: unknown): string => {
  */
 export function useAppBoot(): { app: AppState | null; error: string | null } {
   const auth = useAuth();
-  const login = auth.status === 'signed-in' && auth.user?.login ? auth.user.login : 'someone';
   const [booted, setBooted] = useState<Booted | null>(null);
+  // Stage apps get no login from the host (identity is elevated), so fall back to
+  // the name the user typed on the Group screen.
+  const login = auth.status === 'signed-in' && auth.user?.login ? auth.user.login : booted?.config.displayName?.trim() || 'someone';
   const [error, setError] = useState<string | null>(null);
   const [shared, setShared] = useState<Store | null>(null);
   const [sharedStatus, setSharedStatus] = useState<SharedStatus>('none');
@@ -60,8 +62,10 @@ export function useAppBoot(): { app: AppState | null; error: string | null } {
     let cancelled = false;
     (async () => {
       let priv: Store;
+      const t0 = performance.now();
       try {
         priv = await openPrivateStore('data');
+        console.debug(`puzzle-classics: private store ready in ${Math.round(performance.now() - t0)}ms`);
       } catch (e) {
         // No settings mount (e.g. a host without storage): keep playing in memory.
         console.warn('puzzle-classics: private store unavailable', e);
@@ -139,11 +143,11 @@ export function useAppBoot(): { app: AppState | null; error: string | null } {
     setSharedVersion((v) => v + 1);
   }, []);
 
-  // Push my records whenever the shared store (re)opens.
+  // Push my records whenever the shared store (re)opens or my name changes.
   useEffect(() => {
     if (shared && booted) void syncShared({ shared, booted });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shared]);
+  }, [shared, login]);
 
   const connectShared = useCallback(
     async (how: 'pick' | 'create', name?: string) => {

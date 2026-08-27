@@ -20,7 +20,7 @@ function WordKeyboard({ states, disabled, onKey }: Props) {
             </button>
           )}
           {row.split('').map((ch) => (
-            <button type="button" key={ch} className={`key ${states[ch] ?? ''}`} disabled={disabled} onClick={() => onKey(ch)}>
+            <button type="button" key={ch} className={`key ${states[ch] ?? ''}`} disabled={disabled} onClick={() => onKey(ch)} aria-label={states[ch] ? `${ch} ${states[ch]}` : undefined}>
               {ch}
             </button>
           ))}

@@ -26,7 +26,8 @@ function MineBoard({ game, flagMode, onReveal, onFlag, onChord }: Props) {
     const el = wrap.current;
     if (!el) return;
     const fit = () => {
-      const w = el.clientWidth - 2;
+      // Budget the 2px grid gaps too, or a 9-wide board overflows a 390px phone by one column.
+      const w = el.clientWidth - 2 - (game.cols - 1) * 2;
       setCell(Math.max(32, Math.min(42, Math.floor(w / game.cols))));
     };
     fit();

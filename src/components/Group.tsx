@@ -4,6 +4,7 @@ import { useSharedBoard } from '../hooks/useSharedBoard';
 import { formatMs } from '../lib/format';
 import { todayKey } from '../lib/rng';
 import Icon from './Icon';
+import NameSetting from './NameSetting';
 
 const MINE_LEVELS = ['beginner', 'intermediate', 'expert'];
 const SUDOKU_LEVELS = ['easy', 'medium', 'hard'];
@@ -68,6 +69,7 @@ function Group() {
             </button>
           </form>
           {sharedError && <p className="error">{sharedError}</p>}
+          <NameSetting />
         </section>
       </main>
     );
@@ -89,6 +91,7 @@ function Group() {
       </div>
       {readOnly && <p className="notice">This space was granted read-only, so your own results are not posted here.</p>}
       <p className="hint">You appear as <b>{login}</b>. Updates from other members show up within a few seconds.</p>
+      <NameSetting />
 
       <section className="panel">
         <h3>Today's word · {today}</h3>

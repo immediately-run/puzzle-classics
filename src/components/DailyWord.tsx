@@ -158,7 +158,7 @@ function DailyWord() {
         {rows.map((row, r) => (
           <div className={`brow ${row.current && shake ? 'shake' : ''}`} key={r} role="row">
             {row.letters.map((ch, c) => (
-              <div key={c} className={`tile ${row.states ? row.states[c] : ch.trim() ? 'filled' : ''}`} role="gridcell">
+              <div key={c} className={`tile ${row.states ? row.states[c] : ch.trim() ? 'filled' : ''}`} role="gridcell" aria-label={row.states ? `${ch.toUpperCase()} ${row.states[c]}` : undefined}>
                 {ch.trim().toUpperCase()}
               </div>
             ))}
