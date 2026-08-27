@@ -19,6 +19,8 @@ export interface AppState {
   /** Error text from the last share attempt (cancelled is silent). */
   sharedError: string | null;
   connectShared: (how: 'pick' | 'create', name?: string) => Promise<void>;
+  /** Bumped after each push of my records into the shared space (boards re-read on it). */
+  sharedVersion: number;
   forgetShared: () => void;
   stats: { minesweeper: TimedStats; sudoku: TimedStats; word: WordStats };
   recordMinesweeper: (difficulty: string, won: boolean, ms: number) => void;

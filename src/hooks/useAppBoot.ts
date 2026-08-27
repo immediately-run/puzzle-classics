@@ -54,6 +54,7 @@ export function useAppBoot(): { app: AppState | null; error: string | null } {
   const [shared, setShared] = useState<Store | null>(null);
   const [sharedStatus, setSharedStatus] = useState<SharedStatus>('none');
   const [sharedError, setSharedError] = useState<string | null>(null);
+  const [sharedVersion, setSharedVersion] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -135,6 +136,7 @@ export function useAppBoot(): { app: AppState | null; error: string | null } {
     } catch (e) {
       console.warn('puzzle-classics: shared sync failed', e);
     }
+    setSharedVersion((v) => v + 1);
   }, []);
 
   // Push my records whenever the shared store (re)opens.
@@ -210,6 +212,7 @@ export function useAppBoot(): { app: AppState | null; error: string | null } {
       sharedStatus,
       sharedError,
       connectShared,
+      sharedVersion,
       forgetShared,
       stats: booted.stats,
       recordMinesweeper,
@@ -217,7 +220,7 @@ export function useAppBoot(): { app: AppState | null; error: string | null } {
       recordDailyWord,
       todayResult: booted.todayResult,
     };
-  }, [booted, login, setConfig, shared, sharedStatus, sharedError, connectShared, forgetShared, recordMinesweeper, recordSudoku, recordDailyWord]);
+  }, [booted, login, setConfig, shared, sharedStatus, sharedError, connectShared, sharedVersion, forgetShared, recordMinesweeper, recordSudoku, recordDailyWord]);
 
   return { app, error };
 }

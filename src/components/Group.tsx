@@ -9,11 +9,11 @@ const MINE_LEVELS = ['beginner', 'intermediate', 'expert'];
 const SUDOKU_LEVELS = ['easy', 'medium', 'hard'];
 
 function Group() {
-  const { shared, sharedStatus, sharedError, connectShared, forgetShared, config, login } = useApp();
+  const { shared, sharedStatus, sharedError, connectShared, sharedVersion, forgetShared, config, login } = useApp();
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const today = todayKey();
-  const board = useSharedBoard(shared, today, 4000);
+  const board = useSharedBoard(shared, today, sharedVersion, 4000);
 
   const go = async (how: 'pick' | 'create') => {
     setBusy(true);

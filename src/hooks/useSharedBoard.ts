@@ -22,7 +22,8 @@ async function readAll<T extends object>(dir: string): Promise<T[]> {
 }
 
 /** Merges every member's one-file-per-record entries; polls (shared spaces get no remote events). */
-export function useSharedBoard(shared: Store | null, date: string, intervalMs = 4000): Board {
+/** `version` forces a re-read (bumped after this user's own records are written). */
+export function useSharedBoard(shared: Store | null, date: string, version: number, intervalMs = 4000): Board {
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const key = shared ? `${shared.root}|${date}` : '';
 
@@ -44,7 +45,7 @@ export function useSharedBoard(shared: Store | null, date: string, intervalMs = 
       cancelled = true;
       for (const stop of stops) stop();
     };
-  }, [shared, date, intervalMs, key]);
+  }, [shared, date, intervalMs, key, version]);
 
   if (!shared) return { daily: [], best: [], loading: false };
   if (!snap || snap.key !== key) return { daily: [], best: [], loading: true };
