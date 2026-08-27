@@ -1,4 +1,11 @@
-# Working in this repo
+# Puzzle classics — working in this repo
+
+Minesweeper, Sudoku and a daily word game for immediately.run. Game rules are
+pure functions in `src/lib/` (`minesweeper.ts`, `sudoku.ts`, `wordle.ts`,
+`stats.ts`, `timing.ts`); persistence goes through `src/lib/store.ts` (the
+platform `fs` module — private settings mount + optional shared space) and the
+hooks in `src/hooks/`; screens live in `src/components/`. Word lists are plain
+arrays in `src/data/`. Layout of the files the app writes is in `README.md`.
 
 This is an **immediately.run app**: React + TypeScript that loads from GitHub and
 transpiles in the browser (no server, no build step at runtime). Keep the rules

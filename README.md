@@ -1,135 +1,92 @@
-# immediately.run — starter template
+# Puzzle classics
 
-A ready-to-run starter for building apps on
-[immediately.run](https://immediately.run): React + TypeScript + Vite, wired to
-the brand design system, with the project layout immediately.run expects.
+Minesweeper, Sudoku and a daily five-letter word game — with streaks kept in
+your own files and an optional shared results board for your group. An example
+app for [immediately.run](https://immediately.run): React + TypeScript, no
+server, no accounts, no dependencies beyond the platform SDK.
 
-## Try it instantly
+## Try it
 
-Try this template on [immediately.run](https://immediately.run/present/github/immediately-run/new-project-template/main/files/src/App.tsx)
+Open it on immediately.run:
 
-> Using this as a starting point for your own app? After you push to your repo,
-> update the link above to
-> `https://immediately.run/present/github/<owner>/<repo>/<ref>/files/src/App.tsx`.
+<https://immediately.run/present/github/immediately-run/puzzle-classics/main/files/src/App.tsx>
 
-## Use this template
+Works on a phone (375 px wide) as well as a desktop. Everything is tap-friendly;
+keyboards are optional extras.
 
-1. Create a new repo from this template (or copy the files).
-2. `npm install`
-3. `npm run dev` and start editing `src/App.tsx`.
-4. Push to GitHub and open it on immediately.run with the link above.
+## What's inside
 
-## Fast loading on immediately.run (auto-cache)
+**Minesweeper** — beginner (9×9, 10), intermediate (16×16, 40), expert (30×16, 99)
+and custom boards. The first tap is always safe and opens an area. Tap-mode
+toggle (Dig / Flag) for touch, long-press or right-click to flag, tap a revealed
+number whose flags match to chord-open its neighbours. Timer, best times per
+level, win streak.
 
-immediately.run normally reads your sources from the GitHub API, which is slow
-and rate-limited for anonymous visitors. This template ships a GitHub Action
-([`.github/workflows/cache.yml`](./.github/workflows/cache.yml)) that, on every
-push to `main`, builds a pre-cached zip of your repo and publishes it to your
-repo's **own GitHub Pages**. immediately.run finds it automatically at
-`https://<owner>.github.io/<repo>/cached_repositories/main.zip` and loads from
-there — falling back to the API if it's missing.
+**Sudoku** — puzzles generated on the device with a guaranteed unique solution
+(randomised fill + digger that checks uniqueness with a bitmask backtracking
+solver) at easy / medium / hard. Pencil marks, mistake highlighting (toggle),
+hint (reveals one cell), undo, timer, on-screen numpad with remaining counts,
+and keyboard control (digits, backspace, arrows, `N` notes, `Z` undo, `H` hint).
 
-The cache also embeds a manifest sidecar, so visitors can push edits back to
-GitHub even when the app was loaded from the zip.
+**Daily word** — one five-letter word per calendar day, the same for everyone
+(seeded from the date into a bundled answer list of ~1,250 words; ~4,000 words
+are accepted as guesses). Six guesses, on-screen keyboard with letter states,
+share-result grid copied to the clipboard, daily streak and guess distribution.
+A practice mode hands out random words.
 
-### Enable the cache (one-time)
+**Group board** — optional. Pick or create a shared space and every member's
+daily word result and best minesweeper / sudoku times are merged into one board.
 
-For a repo in your **own** GitHub account or org, there's a single one-time step:
+## How data is stored
 
-1. **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-2. Push to `main` (or re-run the **Cache for immediately.run** workflow from the
-   Actions tab).
+Everything is plain JSON in the platform filesystem — no browser storage is
+used (the app runs at an opaque origin where `localStorage` throws).
 
-That's it — no tokens and no secrets to configure. The workflow builds the zip and
-publishes it to your repo's Pages; immediately.run finds it automatically on the
-next load. The first publish can lag a push by up to ~10 minutes of GitHub Pages
-CDN caching. If the app still loads from the API, check that the workflow run
-succeeded and that Pages shows a green **github-pages** deployment.
-
-> **immediately-run org repos** skip even that step: the org's internal **deploy
-> GitHub App** self-provisions Pages on the first run (it holds Pages +
-> Administration write and its `DEPLOY_APP_ID` / `DEPLOY_APP_PRIVATE_KEY` are org
-> secrets). That App is org-internal — repos outside the org neither have nor need
-> it, and `cache.yml` automatically falls back to the manual step above.
-
-### Always run the newest commit
-
-By default the cached version is served even if it's a few minutes behind
-`main`. If your app must always reflect the very latest commit, add this to
-`package.json`:
-
-```jsonc
-{
-  "immediately.run": {
-    "requireLatest": true
-  }
-}
-```
-
-immediately.run still boots instantly from the cache, then checks in the
-background (one API request) whether the cache is current and, if not, reloads
-from GitHub.
-
-## How it's organized
-
-immediately.run renders the **default export of `src/App.tsx`** — that's the
-entry point, not `main.tsx`.
+Private, per-user, per-app (the app's settings mount):
 
 ```
-src/
-  main.tsx              # local vite dev/build entry only — immediately.run IGNORES this
-  App.tsx               # ROOT: default export + imports the global CSS
-  index.css             # fonts, design tokens (dark + light), resets
-  App.css               # layout + component styles
-  mdx.d.ts              # type shim so `import X from './x.mdx'` works
-  components/           # one default-exported React component per file
-  data/                 # typed data arrays (NO components/JSX here)
-  hooks/                # custom hooks (NO components here)
-  assets/               # images you import, e.g. import logo from './assets/logo.png'
+<private>/config.json                 remembered space id + preferences
+<private>/state/minesweeper.json      in-progress board (resumes with its clock)
+<private>/state/sudoku.json           in-progress puzzle, notes, undo history
+<private>/state/word.json             today's daily game
+<private>/state/word-practice.json    current practice game
+<private>/stats/<game>.json           played / won / streaks / best times
+<private>/daily/<YYYY-MM-DD>.json     the day's word result
 ```
 
-The included page shows the core patterns: a data array mapped to cards
-(`data/features.ts` → `components/Features.tsx`), a custom hook
-(`hooks/useTheme.ts` → `components/ThemeSwitch.tsx`), and local React state
-(`components/Counter.tsx`).
+Shared space (only when you connect one) — **one record = one file**, and each
+member only ever writes their own files, so nothing can be clobbered:
 
-## Filesystem access (`fs`)
-
-immediately.run apps can read and write a filesystem by importing `fs` (async
-only — `fs.promises.*` and callback style). This template has local-dev support
-for it built in via [`@immediately-run/dev-fs`](https://github.com/immediately-run/dev-fs),
-a Vite plugin (already wired into `vite.config.ts`) that bridges the same
-filesystem to your real local disk during `vite dev`. See that repo for the
-supported API and details.
-
-```ts
-import fs from 'fs'
-
-await fs.promises.writeFile('/data/notes.txt', 'hello', 'utf8')
-const text = await fs.promises.readFile('/data/notes.txt', 'utf8')
+```
+<shared>/puzzle-classics/daily/<YYYY-MM-DD>/<login>.json   guess count, won, grid
+<shared>/puzzle-classics/best/<login>.json                 best times per level
 ```
 
-`main.tsx` runs a one-off round-trip smoke test in dev — check the browser
-console for the `[dev-fs]` group, and delete it freely.
+The Group screen merges those files and polls the two directories every 4 s
+(shared spaces don't get remote change events). Your own records are pushed
+when a game finishes and whenever the space (re)connects.
 
-## The rules that keep it working on immediately.run
+## Multi-user notes
 
-See [`CLAUDE.md`](./CLAUDE.md) for the full list. The essentials:
+- Connecting a space is asked for, never taken: "Open a shared space" goes
+  through the host's picker, "Create a new space" through the host's consent
+  dialog. Declining just leaves the board off.
+- The app cannot invite anyone — share the space itself from the platform's
+  Spaces UI.
+- A read-only grant shows the board but doesn't post your results.
+- The chosen space id is remembered in `<private>/config.json` and re-mounted
+  at boot without a prompt. If the grant is gone (or the space was *created*
+  rather than picked — creation currently records no durable grant), the Group
+  screen offers "Reconnect a space".
 
-- **Global CSS is imported from `App.tsx`, never only from `main.tsx`.**
-- **A file that exports a component exports *only* components** — data, consts,
-  and helpers go in `data/`, `hooks/`, or `lib/`. `npm run lint` enforces this.
-- **Pull colors, fonts, radii, and shadows from the tokens in `index.css`**
-  rather than hard-coding values.
-
-## Develop
-
-Requires Node.js 20.19+ or 22.12+.
+## Local development
 
 ```bash
 npm install
-npm run dev      # local dev server
-npm run build    # tsc -b && vite build — must pass with no type errors
-npm run lint     # eslint — enforces the React Fast Refresh / HMR rule
-npm run preview  # serve the production build
+npm run dev      # vite dev — the fs bridge writes under ./devfs-playground/
+npm run build    # tsc + vite build
+npm run lint     # includes the React Fast Refresh rule immediately.run relies on
 ```
+
+Under `vite dev` there is no host, so the "shared space" is simulated by a
+second folder under `devfs-playground/` and the signed-in user is "someone".
