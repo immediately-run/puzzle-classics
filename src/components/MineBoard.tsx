@@ -77,6 +77,8 @@ function MineBoard({ game, flagMode, onReveal, onFlag, onChord }: Props) {
   const onContext = (i: number) => (e: { preventDefault(): void }) => {
     e.preventDefault();
     if (over) return;
+    const p = press.current;
+    if (p.fired && p.i === i) return; // Android fires contextmenu after our long-press already flagged
     const c = game.cells[i];
     if (c.r) onChord(i);
     else onFlag(i);

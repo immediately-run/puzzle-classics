@@ -119,9 +119,13 @@ function Group() {
             <table className="best">
               <thead>
                 <tr>
-                  <th>Player</th>
-                  {MINE_LEVELS.map((l) => <th key={l}>Mines {l}</th>)}
-                  {SUDOKU_LEVELS.map((l) => <th key={l}>Sudoku {l}</th>)}
+                  <th rowSpan={2}>Player</th>
+                  <th colSpan={3}>Minesweeper</th>
+                  <th colSpan={3}>Sudoku</th>
+                </tr>
+                <tr>
+                  {MINE_LEVELS.map((l) => <th key={l}>{l.slice(0, 3)}</th>)}
+                  {SUDOKU_LEVELS.map((l) => <th key={l}>{l.slice(0, 4)}</th>)}
                 </tr>
               </thead>
               <tbody>
