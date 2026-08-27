@@ -10,8 +10,12 @@ import { devFs } from '@immediately-run/dev-fs'
 // devFs() (@immediately-run/dev-fs) makes `import ... from 'fs'` work during
 // local `vite dev`, bridging the same async ZenFS surface immediately.run
 // provides to your real disk. It is dev-only and absent from production builds.
+//
+// __APP_DEV__ replaces `import.meta.env.DEV` in app code: `import.meta` is a
+// parse error in the sandbox transpiler, a plain global is not.
 // https://vite.dev/config/
 export default defineConfig({
+  define: { __APP_DEV__: JSON.stringify(process.env.NODE_ENV !== 'production') },
   plugins: [
     devFs(),
     { enforce: 'pre', ...mdx() },
