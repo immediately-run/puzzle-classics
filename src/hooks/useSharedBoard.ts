@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { listFiles, pollDir, readJson, type Store } from '../lib/store';
+import { listFiles, readJson, watchDir, type Store } from '../lib/store';
 import { p } from '../lib/appContext';
 import type { SharedBest, SharedDaily } from '../lib/stats';
 
@@ -21,9 +21,9 @@ async function readAll<T extends object>(dir: string): Promise<T[]> {
   return items.filter((x): x is T => x !== null && typeof x === 'object');
 }
 
-/** Merges every member's one-file-per-record entries; polls (shared spaces get no remote events). */
+/** Merges every member's one-file-per-record entries; watches the shared root (R3-901 — the relay covers remote events). */
 /** `version` forces a re-read (bumped after this user's own records are written). */
-export function useSharedBoard(shared: Store | null, date: string, version: number, intervalMs = 4000): Board {
+export function useSharedBoard(shared: Store | null, date: string, version: number): Board {
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const key = shared ? `${shared.root}|${date}` : '';
 
@@ -40,12 +40,12 @@ export function useSharedBoard(shared: Store | null, date: string, version: numb
       setSnap({ key, daily, best });
     };
     void load();
-    const stops = [pollDir(dailyDir, () => void load(), intervalMs), pollDir(bestDir, () => void load(), intervalMs)];
+    const stop = watchDir(shared.root, () => void load());
     return () => {
       cancelled = true;
-      for (const stop of stops) stop();
+      stop();
     };
-  }, [shared, date, intervalMs, key, version]);
+  }, [shared, date, key, version]);
 
   if (!shared) return { daily: [], best: [], loading: false };
   if (!snap || snap.key !== key) return { daily: [], best: [], loading: true };
