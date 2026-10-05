@@ -14,7 +14,7 @@ function Group() {
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const today = todayKey();
-  const board = useSharedBoard(shared, today, sharedVersion, 4000);
+  const board = useSharedBoard(shared, today, sharedVersion);
 
   const go = async (how: 'pick' | 'create') => {
     setBusy(true);
